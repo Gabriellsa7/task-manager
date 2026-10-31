@@ -6,6 +6,7 @@ import {
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/components/toast";
 import { getErrorMessage } from "@/lib/errors";
 import { TASK_PAGE_SIZE, type Task } from "@/lib/task-schema";
@@ -31,6 +32,24 @@ export function TaskList() {
 
   const tasks = data.pages.flatMap((page) => page.items);
 
+  // Infinite scroll: quando o botão "Carregar mais" se aproxima da área visível,
+  // a próxima página é buscada automaticamente. O botão continua clicável como
+  // alternativa (acessibilidade / browsers sem IntersectionObserver).
+  const loadMoreRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element || !hasNextPage || isFetchingNextPage) return;
+
+    // Recriado a cada página carregada: se o botão ainda estiver visível (tela
+    // grande), o observer dispara de novo e continua preenchendo a tela.
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && fetchNextPage(),
+      { rootMargin: "200px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   if (tasks.length === 0) {
     return (
       <p className="card muted">
@@ -48,6 +67,7 @@ export function TaskList() {
       </ul>
       {hasNextPage && (
         <button
+          ref={loadMoreRef}
           className="btn load-more"
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}

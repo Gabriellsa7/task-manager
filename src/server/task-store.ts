@@ -47,3 +47,14 @@ export function updateTask(id: number, input: TaskInput) {
 export function deleteTask(id: number) {
   return store.tasks.delete(id);
 }
+
+// Tarefas de exemplo para a listagem (e o infinite scroll) já terem conteúdo
+// ao abrir a aplicação.
+if (store.tasks.size === 0 && store.nextId === 1) {
+  for (let i = 1; i <= 25; i++) {
+    createTask({
+      titulo: `Tarefa de exemplo ${i}`,
+      descricao: i % 3 === 0 ? undefined : `Descrição da tarefa de exemplo ${i}`,
+    });
+  }
+}
