@@ -7,10 +7,8 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main style={{ padding: 16 }}>
-        <h1>Gerenciador de Tarefas</h1>
-        <HealthStatus />
-      </main>
+      <h1>Gerenciador de Tarefas</h1>
+      <HealthStatus />
     </HydrateClient>
   );
 }
