@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { button, card } from "@/components/styles";
 import { useToast } from "@/components/toast";
 import { getErrorMessage } from "@/lib/errors";
 import { TASK_PAGE_SIZE, type Task } from "@/lib/task-schema";
@@ -45,7 +46,7 @@ export function TaskList() {
 
   if (tasks.length === 0) {
     return (
-      <p className="card muted">
+      <p className={`${card} text-sm text-gray-500`}>
         No tasks yet. Click &quot;New task&quot; to get started.
       </p>
     );
@@ -53,7 +54,7 @@ export function TaskList() {
 
   return (
     <>
-      <ul className="task-list">
+      <ul className="flex flex-col gap-3">
         {tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
@@ -61,7 +62,7 @@ export function TaskList() {
       {hasNextPage && (
         <button
           ref={loadMoreRef}
-          className="btn load-more"
+          className={`${button.default} mx-auto mt-4 flex`}
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
         >
@@ -93,20 +94,26 @@ function TaskItem({ task }: { task: Task }) {
   }
 
   return (
-    <li className="card task">
-      <div className="task-body">
-        <h2>{task.titulo}</h2>
-        {task.descricao && <p>{task.descricao}</p>}
-        <span className="muted">
+    <li
+      className={`${card} flex flex-col items-start justify-between gap-4 sm:flex-row`}
+    >
+      <div className="min-w-0">
+        <h2 className="mb-1 font-semibold">{task.titulo}</h2>
+        {task.descricao && (
+          <p className="mb-1 wrap-anywhere whitespace-pre-wrap">
+            {task.descricao}
+          </p>
+        )}
+        <span className="text-sm text-gray-500">
           Created on {dateFormat.format(task.dataCriacao)}
         </span>
       </div>
-      <div className="task-actions">
-        <Link href={`/tasks/${task.id}/edit`} className="btn">
+      <div className="flex shrink-0 gap-2">
+        <Link href={`/tasks/${task.id}/edit`} className={button.default}>
           Edit
         </Link>
         <button
-          className="btn btn-danger"
+          className={button.danger}
           onClick={handleDelete}
           disabled={deleteTask.isPending}
         >
