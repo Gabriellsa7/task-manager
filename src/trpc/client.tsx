@@ -14,9 +14,7 @@ export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 let browserQueryClient: QueryClient | undefined;
 
 function getQueryClient() {
-  // No servidor, sempre um client novo por request (evita vazar dados entre usuários).
   if (typeof window === "undefined") return makeQueryClient();
-  // No browser, um singleton para não perder cache se o React suspender.
   return (browserQueryClient ??= makeQueryClient());
 }
 

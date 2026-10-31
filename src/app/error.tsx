@@ -1,6 +1,5 @@
 "use client";
 
-// Fallback para erros inesperados ao renderizar uma página.
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="card">

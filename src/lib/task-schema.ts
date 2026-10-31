@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-// Schemas compartilhados entre backend (input do tRPC) e frontend (validação do
-// formulário), garantindo as mesmas regras nos dois lados.
-
 export const taskIdSchema = z.number().int().positive();
 
 export const taskInputSchema = z.object({
@@ -27,6 +24,4 @@ export type Task = {
   dataCriacao: Date;
 };
 
-// Tamanho de página da listagem; compartilhado entre o prefetch no servidor e o
-// client para que ambos usem a mesma query key.
 export const TASK_PAGE_SIZE = 10;

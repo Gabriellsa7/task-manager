@@ -8,7 +8,6 @@ const notFound = (id: number) =>
   new TRPCError({ code: "NOT_FOUND", message: `Tarefa ${id} não encontrada` });
 
 export const taskRouter = createTRPCRouter({
-  // Paginado por cursor para suportar o infinite scroll no frontend.
   list: publicProcedure
     .input(
       z.object({

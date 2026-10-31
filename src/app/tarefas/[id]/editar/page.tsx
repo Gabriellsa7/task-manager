@@ -13,7 +13,6 @@ export default async function EditTaskPage({
   const parsedId = taskIdSchema.safeParse(Number(id));
   if (!parsedId.success) notFound();
 
-  // Busca a tarefa no servidor para o formulário já abrir preenchido.
   const task = await getQueryClient()
     .fetchQuery(trpc.task.byId.queryOptions({ id: parsedId.data }))
     .catch((error) => {

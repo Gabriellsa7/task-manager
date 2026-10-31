@@ -9,8 +9,6 @@ const ToastContext = createContext<(type: ToastType, message: string) => void>(
   () => {},
 );
 
-// Feedback visual global: fica no layout para sobreviver à navegação entre
-// páginas (ex: "Tarefa criada" aparece após voltar para a listagem).
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(0);

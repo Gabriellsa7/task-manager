@@ -12,7 +12,6 @@ import { useTRPC } from "@/trpc/client";
 
 type FieldErrors = Partial<Record<string, string[]>>;
 
-// Mesmo formulário para criar e editar: com `task` ele entra em modo edição.
 export function TaskForm({ task }: { task?: Task }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -25,7 +24,6 @@ export function TaskForm({ task }: { task?: Task }) {
 
   const callbacks = {
     onSuccess: async () => {
-      // Invalida todas as queries de tarefas (lista e detalhe) antes de voltar.
       await queryClient.invalidateQueries({ queryKey: trpc.task.pathKey() });
       toast(
         "success",
@@ -40,7 +38,6 @@ export function TaskForm({ task }: { task?: Task }) {
   };
   const createTask = useMutation(trpc.task.create.mutationOptions(callbacks));
   const updateTask = useMutation(trpc.task.update.mutationOptions(callbacks));
-  // isSuccess mantém o form travado enquanto a navegação de volta acontece.
   const isSaving =
     createTask.isPending ||
     updateTask.isPending ||
@@ -50,8 +47,6 @@ export function TaskForm({ task }: { task?: Task }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    // Validação no client com o mesmo schema do backend: impede o envio
-    // (ex: título vazio) sem precisar de uma ida ao servidor.
     const parsed = taskInputSchema.safeParse({ titulo, descricao });
     if (!parsed.success) {
       setErrors(z.flattenError(parsed.error).fieldErrors);
@@ -64,7 +59,6 @@ export function TaskForm({ task }: { task?: Task }) {
   }
 
   return (
-    // noValidate: as mensagens de validação são as nossas, não as do browser.
     <form className="card form" onSubmit={handleSubmit} noValidate>
       <div className="field">
         <label htmlFor="titulo">Título *</label>

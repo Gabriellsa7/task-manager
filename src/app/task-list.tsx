@@ -12,7 +12,6 @@ import { getErrorMessage } from "@/lib/errors";
 import { TASK_PAGE_SIZE, type Task } from "@/lib/task-schema";
 import { useTRPC } from "@/trpc/client";
 
-// Fuso fixo para servidor e browser formatarem igual e evitar erro de hidratação.
 const dateFormat = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
@@ -21,7 +20,6 @@ const dateFormat = new Intl.DateTimeFormat("pt-BR", {
 
 export function TaskList() {
   const trpc = useTRPC();
-  // Os dados já chegam do SSR, então não há suspense no primeiro render.
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
       trpc.task.list.infiniteQueryOptions(
@@ -32,16 +30,11 @@ export function TaskList() {
 
   const tasks = data.pages.flatMap((page) => page.items);
 
-  // Infinite scroll: quando o botão "Carregar mais" se aproxima da área visível,
-  // a próxima página é buscada automaticamente. O botão continua clicável como
-  // alternativa (acessibilidade / browsers sem IntersectionObserver).
   const loadMoreRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const element = loadMoreRef.current;
     if (!element || !hasNextPage || isFetchingNextPage) return;
 
-    // Recriado a cada página carregada: se o botão ainda estiver visível (tela
-    // grande), o observer dispara de novo e continua preenchendo a tela.
     const observer = new IntersectionObserver(
       ([entry]) => entry.isIntersecting && fetchNextPage(),
       { rootMargin: "200px" },
@@ -88,8 +81,6 @@ function TaskItem({ task }: { task: Task }) {
     trpc.task.delete.mutationOptions({
       onSuccess: () => toast("success", "Tarefa excluída com sucesso"),
       onError: (error) => toast("error", getErrorMessage(error)),
-      // Recarrega a lista mesmo em erro (ex: tarefa já removida em outra aba).
-      // Retornar a promise mantém o botão em "Excluindo..." até a lista atualizar.
       onSettled: () =>
         queryClient.invalidateQueries({ queryKey: trpc.task.list.pathKey() }),
     }),
