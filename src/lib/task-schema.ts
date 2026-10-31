@@ -26,3 +26,7 @@ export type Task = {
   descricao?: string;
   dataCriacao: Date;
 };
+
+// Tamanho de página da listagem; compartilhado entre o prefetch no servidor e o
+// client para que ambos usem a mesma query key.
+export const TASK_PAGE_SIZE = 10;

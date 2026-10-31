@@ -104,3 +104,51 @@ body {
 .toast-error {
   background: var(--danger);
 }
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.task-body {
+  min-width: 0;
+}
+
+.task h2 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+.task p {
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.load-more {
+  display: block;
+  margin: 16px auto 0;
+}
+
+@media (max-width: 480px) {
+  .task {
+    flex-direction: column;
+  }
+}
