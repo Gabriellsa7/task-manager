@@ -19,6 +19,12 @@ npm run build
 npm start
 ```
 
+Testes:
+
+```bash
+npm test           # ou npm run test:watch
+```
+
 Ao iniciar, a aplicação já tem 25 tarefas de exemplo para demonstrar a paginação.
 Como o armazenamento é em memória, os dados são perdidos ao reiniciar o servidor.
 
@@ -31,6 +37,14 @@ Como o armazenamento é em memória, os dados são perdidos ao reiniciar o servi
 - **Exclusão na listagem** com confirmação e mensagem de sucesso/erro (toast).
 - **Formulário de criação/edição** com validação no client, erros por campo e estados de carregamento.
 - **Infinite scroll** (bônus): novas páginas carregam automaticamente ao rolar.
+
+## Testes
+
+Feitos com **Vitest** e **Testing Library**, sem mockar a API: os testes usam o router e o store em memória reais.
+
+- `src/server/routers/task.test.ts`: CRUD, validação, `NOT_FOUND` e paginação por cursor, chamando as procedures direto.
+- `src/lib/errors.test.ts`: passa pela rota HTTP real (`/api/trpc`) e verifica os erros por campo e as mensagens exibidas ao usuário.
+- `src/app/tarefas/task-form.test.tsx` e `src/app/task-list.test.tsx`: componentes renderizados com os providers reais (o client tRPC chama o handler HTTP em memória). Cobrem validação do formulário, criação, edição, exclusão com confirmação, erros e infinite scroll.
 
 ## Estrutura
 
@@ -52,7 +66,8 @@ src/
 │   ├── client.tsx               # Provider do tRPC/React Query para o browser
 │   └── server.tsx               # Chamadas diretas ao router em Server Components
 ├── lib/                         # Schema zod e helpers de erro (compartilhados)
-└── components/toast.tsx         # Feedback visual global
+├── components/toast.tsx         # Feedback visual global
+└── test/                        # Setup e helpers dos testes
 ```
 
 ## Decisões
