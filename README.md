@@ -1,6 +1,6 @@
 # Task Manager
 
-A simple task manager built with **Next.js 15 (App Router)** and **tRPC v11**.
+A simple task manager built with **Next.js 15 (App Router)**, **tRPC v11** and **Tailwind CSS v4**.
 The backend keeps tasks in memory and the frontend consumes the endpoints through tRPC + React Query.
 
 ## Getting started
@@ -66,7 +66,7 @@ src/
 │   ├── client.tsx               # tRPC/React Query provider for the browser
 │   └── server.tsx               # Direct router calls from Server Components
 ├── lib/                         # zod schema and error helpers (shared)
-├── components/toast.tsx         # Global visual feedback
+├── components/                  # Toast feedback, page header and shared Tailwind styles
 └── test/                        # Test setup and helpers
 ```
 
@@ -79,4 +79,4 @@ src/
 - **Errors**: tRPC's `errorFormatter` sends zod errors per field, and `src/lib/errors.ts` turns any error (server, validation or network) into a user-friendly message.
 - **superjson**: lets `Date` values (`dataCriacao`) travel between server and client without manual conversion.
 - **Store in `globalThis`**: keeps `next dev` hot reload from wiping tasks on every code change.
-- **No UI or form libraries**: plain CSS and `useState`, following the challenge's "less is more".
+- **Tailwind, no UI or form libraries**: utility classes plus a few shared style constants (`src/components/styles.ts`) and `useState` for the form, following the challenge's "less is more".
