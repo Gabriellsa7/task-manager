@@ -1,81 +1,82 @@
-# Gerenciador de Tarefas
+# Task Manager
 
-Aplicação simples de tarefas feita com **Next.js 15 (App Router)** e **tRPC v11**.
-O backend mantém as tarefas em memória e o frontend consome os endpoints via tRPC + React Query.
+A simple task manager built with **Next.js 15 (App Router)** and **tRPC v11**.
+The backend keeps tasks in memory and the frontend consumes the endpoints through tRPC + React Query.
 
-## Como executar
+## Getting started
 
-Requisitos: Node.js 20+.
+Requirements: Node.js 20+.
 
 ```bash
 npm install
 npm run dev        # http://localhost:3000
 ```
 
-Build de produção:
+Production build:
 
 ```bash
 npm run build
 npm start
 ```
 
-Testes:
+Tests:
 
 ```bash
-npm test           # ou npm run test:watch
+npm test           # or npm run test:watch
 ```
 
-Ao iniciar, a aplicação já tem 25 tarefas de exemplo para demonstrar a paginação.
-Como o armazenamento é em memória, os dados são perdidos ao reiniciar o servidor.
+The app starts with 25 sample tasks so pagination can be seen right away.
+Since storage is in memory, data is lost when the server restarts.
 
-## Funcionalidades
+## Features
 
-- **CRUD via tRPC**: criar, listar (paginado), buscar por id, atualizar e excluir tarefas.
-- **Validação**: título obrigatório (até 100 caracteres) e descrição opcional (até 500), com o mesmo schema zod no backend e no formulário.
-- **Erros significativos**: operações em tarefa inexistente retornam `NOT_FOUND` ("Tarefa 5 não encontrada"); erros de validação retornam `BAD_REQUEST` com as mensagens por campo.
-- **Listagem com SSR**: a primeira página é buscada no servidor e chega pronta no HTML.
-- **Exclusão na listagem** com confirmação e mensagem de sucesso/erro (toast).
-- **Formulário de criação/edição** com validação no client, erros por campo e estados de carregamento.
-- **Infinite scroll** (bônus): novas páginas carregam automaticamente ao rolar.
+- **CRUD over tRPC**: create, list (paginated), get by id, update and delete tasks.
+- **Validation**: required title (up to 100 characters) and optional description (up to 500), using the same zod schema on the backend and in the form.
+- **Meaningful errors**: operations on a missing task return `NOT_FOUND` ("Task 5 not found"); validation errors return `BAD_REQUEST` with messages per field.
+- **Server-side rendered list**: the first page is fetched on the server and arrives ready in the HTML.
+- **Delete from the list** with confirmation and success/error feedback (toast).
+- **Create/edit form** with client-side validation, per-field errors and loading states.
+- **Infinite scroll** (bonus): new pages load automatically while scrolling.
 
-## Testes
+## Tests
 
-Feitos com **Vitest** e **Testing Library**, sem mockar a API: os testes usam o router e o store em memória reais.
+Written with **Vitest** and **Testing Library**, without mocking the API: tests use the real router and in-memory store.
 
-- `src/server/routers/task.test.ts`: CRUD, validação, `NOT_FOUND` e paginação por cursor, chamando as procedures direto.
-- `src/lib/errors.test.ts`: passa pela rota HTTP real (`/api/trpc`) e verifica os erros por campo e as mensagens exibidas ao usuário.
-- `src/app/tarefas/task-form.test.tsx` e `src/app/task-list.test.tsx`: componentes renderizados com os providers reais (o client tRPC chama o handler HTTP em memória). Cobrem validação do formulário, criação, edição, exclusão com confirmação, erros e infinite scroll.
+- `src/server/routers/task.test.ts`: CRUD, validation, `NOT_FOUND` and cursor pagination, calling procedures directly.
+- `src/lib/errors.test.ts`: goes through the real HTTP route (`/api/trpc`) and checks per-field errors and the messages shown to the user.
+- `src/app/tasks/task-form.test.tsx` and `src/app/task-list.test.tsx`: components rendered with the real providers (the tRPC client calls the HTTP handler in memory). They cover form validation, creating, editing, deleting with confirmation, errors and infinite scroll.
 
-## Estrutura
+## Structure
 
 ```
 src/
 ├── app/
-│   ├── page.tsx                 # Listagem (SSR + prefetch)
-│   ├── task-list.tsx            # Lista, exclusão e infinite scroll (client)
-│   ├── tarefas/
-│   │   ├── task-form.tsx        # Formulário compartilhado (criar/editar)
-│   │   ├── nova/page.tsx
-│   │   └── [id]/editar/page.tsx
-│   └── api/trpc/[trpc]/route.ts # Endpoint HTTP do tRPC
+│   ├── page.tsx                 # Task list (SSR + prefetch)
+│   ├── task-list.tsx            # List, delete and infinite scroll (client)
+│   ├── tasks/
+│   │   ├── task-form.tsx        # Shared form (create/edit)
+│   │   ├── new/page.tsx
+│   │   └── [id]/edit/page.tsx
+│   └── api/trpc/[trpc]/route.ts # tRPC HTTP endpoint
 ├── server/
-│   ├── trpc.ts                  # Inicialização do tRPC e formatação de erros
-│   ├── task-store.ts            # "Banco" em memória
-│   └── routers/                 # Procedures de tarefas
+│   ├── trpc.ts                  # tRPC setup and error formatting
+│   ├── task-store.ts            # In-memory "database"
+│   └── routers/                 # Task procedures
 ├── trpc/
-│   ├── client.tsx               # Provider do tRPC/React Query para o browser
-│   └── server.tsx               # Chamadas diretas ao router em Server Components
-├── lib/                         # Schema zod e helpers de erro (compartilhados)
-├── components/toast.tsx         # Feedback visual global
-└── test/                        # Setup e helpers dos testes
+│   ├── client.tsx               # tRPC/React Query provider for the browser
+│   └── server.tsx               # Direct router calls from Server Components
+├── lib/                         # zod schema and error helpers (shared)
+├── components/toast.tsx         # Global visual feedback
+└── test/                        # Test setup and helpers
 ```
 
-## Decisões
+## Decisions
 
-- **SSR com hidratação**: a página da listagem faz `prefetchInfiniteQuery` chamando o router direto no servidor (sem HTTP) e repassa o cache ao client via `HydrationBoundary`. Assim o HTML já vem com as tarefas e o client continua com React Query para paginação e invalidação. A página usa `force-dynamic` porque os dados mudam a cada request.
-- **Paginação por cursor**: o id é numérico e incremental, então ele mesmo serve de cursor (`id < cursor`). Diferente de um offset, não pula nem repete itens quando tarefas são criadas ou removidas entre uma página e outra.
-- **Schema único**: `src/lib/task-schema.ts` é usado como input do tRPC e na validação do formulário, então as regras não divergem.
-- **Erros**: o `errorFormatter` do tRPC envia os erros do zod por campo, e `src/lib/errors.ts` traduz qualquer erro (servidor, validação ou rede) em uma mensagem amigável.
-- **superjson**: permite trafegar `Date` (`dataCriacao`) entre servidor e client sem conversão manual.
-- **Store em `globalThis`**: evita que o hot reload do `next dev` apague as tarefas a cada alteração de código.
-- **Sem bibliotecas de UI/formulário**: CSS simples e `useState`, seguindo o "menos é mais" do desafio.
+- **Field names follow the challenge spec**: the task model uses `titulo`, `descricao` and `dataCriacao` exactly as specified; everything else is in English.
+- **SSR with hydration**: the list page runs `prefetchInfiniteQuery` calling the router directly on the server (no HTTP round trip) and hands the cache to the client through `HydrationBoundary`. The HTML already contains the tasks, and the client keeps using React Query for pagination and invalidation. The page uses `force-dynamic` because data changes on every request.
+- **Cursor pagination**: ids are numeric and incremental, so the id itself is the cursor (`id < cursor`). Unlike an offset, it doesn't skip or repeat items when tasks are created or deleted between pages.
+- **Single schema**: `src/lib/task-schema.ts` is used both as tRPC input and for form validation, so the rules never diverge.
+- **Errors**: tRPC's `errorFormatter` sends zod errors per field, and `src/lib/errors.ts` turns any error (server, validation or network) into a user-friendly message.
+- **superjson**: lets `Date` values (`dataCriacao`) travel between server and client without manual conversion.
+- **Store in `globalThis`**: keeps `next dev` hot reload from wiping tasks on every code change.
+- **No UI or form libraries**: plain CSS and `useState`, following the challenge's "less is more".
