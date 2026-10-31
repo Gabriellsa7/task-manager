@@ -27,7 +27,7 @@ export function TaskForm({ task }: { task?: Task }) {
       await queryClient.invalidateQueries({ queryKey: trpc.task.pathKey() });
       toast(
         "success",
-        task ? "Tarefa atualizada com sucesso" : "Tarefa criada com sucesso",
+        task ? "Task updated successfully" : "Task created successfully",
       );
       router.push("/");
     },
@@ -61,7 +61,7 @@ export function TaskForm({ task }: { task?: Task }) {
   return (
     <form className="card form" onSubmit={handleSubmit} noValidate>
       <div className="field">
-        <label htmlFor="titulo">Título *</label>
+        <label htmlFor="titulo">Title *</label>
         <input
           id="titulo"
           value={titulo}
@@ -74,7 +74,7 @@ export function TaskForm({ task }: { task?: Task }) {
       </div>
 
       <div className="field">
-        <label htmlFor="descricao">Descrição</label>
+        <label htmlFor="descricao">Description</label>
         <textarea
           id="descricao"
           rows={4}
@@ -88,10 +88,10 @@ export function TaskForm({ task }: { task?: Task }) {
 
       <div className="form-actions">
         <Link href="/" className="btn">
-          Cancelar
+          Cancel
         </Link>
         <button type="submit" className="btn btn-primary" disabled={isSaving}>
-          {isSaving ? "Salvando..." : "Salvar"}
+          {isSaving ? "Saving..." : "Save"}
         </button>
       </div>
     </form>

@@ -16,9 +16,9 @@ export default async function Home() {
   return (
     <HydrateClient>
       <div className="header">
-        <h1>Tarefas</h1>
-        <Link href="/tarefas/nova" className="btn btn-primary">
-          Nova tarefa
+        <h1>Tasks</h1>
+        <Link href="/tasks/new" className="btn btn-primary">
+          New task
         </Link>
       </div>
       <TaskList />

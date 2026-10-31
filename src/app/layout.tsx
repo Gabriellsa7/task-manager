@@ -4,8 +4,8 @@ import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Gerenciador de Tarefas",
-  description: "Desafio técnico: Next.js 15 + tRPC",
+  title: "Task Manager",
+  description: "Tech challenge: Next.js 15 + tRPC",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <body>
         <TRPCReactProvider>
           <ToastProvider>

@@ -3,9 +3,9 @@
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
     <div className="card">
-      <p>Algo deu errado ao carregar esta página.</p>
+      <p>Something went wrong while loading this page.</p>
       <button className="btn" onClick={reset}>
-        Tentar novamente
+        Try again
       </button>
     </div>
   );

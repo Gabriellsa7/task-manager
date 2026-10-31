@@ -25,7 +25,7 @@ vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
 function renderList() {
   return renderWithProviders(
-    <Suspense fallback={<p>Carregando...</p>}>
+    <Suspense fallback={<p>Loading...</p>}>
       <TaskList />
     </Suspense>,
   );
@@ -33,7 +33,7 @@ function renderList() {
 
 async function createMany(count: number) {
   for (let i = 1; i <= count; i++) {
-    await caller.task.create({ titulo: `Tarefa ${i}` });
+    await caller.task.create({ titulo: `Task ${i}` });
   }
 }
 
@@ -47,85 +47,85 @@ describe("TaskList", () => {
     await clearTasks();
   });
 
-  it("mostra mensagem quando não há tarefas", async () => {
+  it("shows a message when there are no tasks", async () => {
     renderList();
-    expect(await screen.findByText(/Nenhuma tarefa ainda/)).toBeInTheDocument();
+    expect(await screen.findByText(/No tasks yet/)).toBeInTheDocument();
   });
 
-  it("lista as tarefas mais recentes primeiro", async () => {
-    await caller.task.create({ titulo: "Primeira", descricao: "Com descrição" });
-    await caller.task.create({ titulo: "Segunda" });
+  it("lists the newest tasks first", async () => {
+    await caller.task.create({ titulo: "First", descricao: "With description" });
+    await caller.task.create({ titulo: "Second" });
     renderList();
 
-    await screen.findByText("Segunda");
-    expect(titles()).toEqual(["Segunda", "Primeira"]);
-    expect(screen.getByText("Com descrição")).toBeInTheDocument();
-    expect(screen.getAllByText(/^Criada em/)).toHaveLength(2);
-    expect(screen.queryByRole("button", { name: "Carregar mais" })).not.toBeInTheDocument();
+    await screen.findByText("Second");
+    expect(titles()).toEqual(["Second", "First"]);
+    expect(screen.getByText("With description")).toBeInTheDocument();
+    expect(screen.getAllByText(/^Created on/)).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Load more" })).not.toBeInTheDocument();
   });
 
-  it("carrega a próxima página ao rolar até o fim", async () => {
+  it("loads the next page when scrolling to the end", async () => {
     await createMany(15);
     renderList();
 
-    await screen.findByText("Tarefa 15");
+    await screen.findByText("Task 15");
     expect(titles()).toHaveLength(10);
 
     act(() => observers.forEach((observer) => observer.intersect()));
 
     await waitFor(() => expect(titles()).toHaveLength(15));
-    expect(titles().at(-1)).toBe("Tarefa 1");
-    expect(screen.queryByRole("button", { name: "Carregar mais" })).not.toBeInTheDocument();
+    expect(titles().at(-1)).toBe("Task 1");
+    expect(screen.queryByRole("button", { name: "Load more" })).not.toBeInTheDocument();
   });
 
-  it("carrega a próxima página pelo botão", async () => {
+  it("loads the next page with the button", async () => {
     const user = userEvent.setup();
     await createMany(12);
     renderList();
 
-    await user.click(await screen.findByRole("button", { name: "Carregar mais" }));
+    await user.click(await screen.findByRole("button", { name: "Load more" }));
 
     await waitFor(() => expect(titles()).toHaveLength(12));
   });
 
-  it("exclui a tarefa após confirmação", async () => {
+  it("deletes the task after confirmation", async () => {
     const user = userEvent.setup();
-    await caller.task.create({ titulo: "Manter" });
-    await caller.task.create({ titulo: "Excluir esta" });
+    await caller.task.create({ titulo: "Keep" });
+    await caller.task.create({ titulo: "Delete this one" });
     renderList();
 
-    const item = (await screen.findByText("Excluir esta")).closest("li")!;
-    await user.click(within(item).getByRole("button", { name: "Excluir" }));
+    const item = (await screen.findByText("Delete this one")).closest("li")!;
+    await user.click(within(item).getByRole("button", { name: "Delete" }));
 
-    expect(window.confirm).toHaveBeenCalledWith('Excluir a tarefa "Excluir esta"?');
-    expect(await screen.findByText("Tarefa excluída com sucesso")).toBeInTheDocument();
-    await waitFor(() => expect(titles()).toEqual(["Manter"]));
+    expect(window.confirm).toHaveBeenCalledWith('Delete task "Delete this one"?');
+    expect(await screen.findByText("Task deleted successfully")).toBeInTheDocument();
+    await waitFor(() => expect(titles()).toEqual(["Keep"]));
   });
 
-  it("não exclui se o usuário cancelar", async () => {
+  it("does not delete if the user cancels", async () => {
     const user = userEvent.setup();
     vi.mocked(window.confirm).mockReturnValue(false);
-    const task = await caller.task.create({ titulo: "Fica" });
+    const task = await caller.task.create({ titulo: "Stays" });
     renderList();
 
-    await user.click(await screen.findByRole("button", { name: "Excluir" }));
+    await user.click(await screen.findByRole("button", { name: "Delete" }));
 
     await expect(caller.task.byId({ id: task.id })).resolves.toBeDefined();
-    expect(titles()).toEqual(["Fica"]);
+    expect(titles()).toEqual(["Stays"]);
   });
 
-  it("mostra erro e atualiza a lista se a tarefa já foi removida", async () => {
+  it("shows an error and refreshes the list if the task was already deleted", async () => {
     const user = userEvent.setup();
-    const task = await caller.task.create({ titulo: "Já removida" });
+    const task = await caller.task.create({ titulo: "Already deleted" });
     renderList();
-    await screen.findByText("Já removida");
+    await screen.findByText("Already deleted");
     await caller.task.delete({ id: task.id });
 
-    await user.click(screen.getByRole("button", { name: "Excluir" }));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
     expect(
       await screen.findByText(`Task ${task.id} not found`),
     ).toBeInTheDocument();
-    expect(await screen.findByText(/Nenhuma tarefa ainda/)).toBeInTheDocument();
+    expect(await screen.findByText(/No tasks yet/)).toBeInTheDocument();
   });
 });

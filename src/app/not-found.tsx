@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="card">
-      <p>Tarefa ou página não encontrada.</p>
+      <p>Task or page not found.</p>
       <Link href="/" className="btn">
-        Voltar para a lista
+        Back to the list
       </Link>
     </div>
   );

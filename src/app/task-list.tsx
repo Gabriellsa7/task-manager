@@ -12,7 +12,7 @@ import { getErrorMessage } from "@/lib/errors";
 import { TASK_PAGE_SIZE, type Task } from "@/lib/task-schema";
 import { useTRPC } from "@/trpc/client";
 
-const dateFormat = new Intl.DateTimeFormat("pt-BR", {
+const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
   timeStyle: "short",
   timeZone: "America/Sao_Paulo",
@@ -46,7 +46,7 @@ export function TaskList() {
   if (tasks.length === 0) {
     return (
       <p className="card muted">
-        Nenhuma tarefa ainda. Clique em &quot;Nova tarefa&quot; para começar.
+        No tasks yet. Click &quot;New task&quot; to get started.
       </p>
     );
   }
@@ -65,7 +65,7 @@ export function TaskList() {
           onClick={() => fetchNextPage()}
           disabled={isFetchingNextPage}
         >
-          {isFetchingNextPage ? "Carregando..." : "Carregar mais"}
+          {isFetchingNextPage ? "Loading..." : "Load more"}
         </button>
       )}
     </>
@@ -79,7 +79,7 @@ function TaskItem({ task }: { task: Task }) {
 
   const deleteTask = useMutation(
     trpc.task.delete.mutationOptions({
-      onSuccess: () => toast("success", "Tarefa excluída com sucesso"),
+      onSuccess: () => toast("success", "Task deleted successfully"),
       onError: (error) => toast("error", getErrorMessage(error)),
       onSettled: () =>
         queryClient.invalidateQueries({ queryKey: trpc.task.list.pathKey() }),
@@ -87,7 +87,7 @@ function TaskItem({ task }: { task: Task }) {
   );
 
   function handleDelete() {
-    if (confirm(`Excluir a tarefa "${task.titulo}"?`)) {
+    if (confirm(`Delete task "${task.titulo}"?`)) {
       deleteTask.mutate({ id: task.id });
     }
   }
@@ -98,19 +98,19 @@ function TaskItem({ task }: { task: Task }) {
         <h2>{task.titulo}</h2>
         {task.descricao && <p>{task.descricao}</p>}
         <span className="muted">
-          Criada em {dateFormat.format(task.dataCriacao)}
+          Created on {dateFormat.format(task.dataCriacao)}
         </span>
       </div>
       <div className="task-actions">
-        <Link href={`/tarefas/${task.id}/editar`} className="btn">
-          Editar
+        <Link href={`/tasks/${task.id}/edit`} className="btn">
+          Edit
         </Link>
         <button
           className="btn btn-danger"
           onClick={handleDelete}
           disabled={deleteTask.isPending}
         >
-          {deleteTask.isPending ? "Excluindo..." : "Excluir"}
+          {deleteTask.isPending ? "Deleting..." : "Delete"}
         </button>
       </div>
     </li>

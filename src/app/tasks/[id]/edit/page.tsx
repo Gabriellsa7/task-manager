@@ -23,7 +23,7 @@ export default async function EditTaskPage({
   return (
     <>
       <div className="header">
-        <h1>Editar tarefa</h1>
+        <h1>Edit task</h1>
       </div>
       <TaskForm task={task} />
     </>
