@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PageHeader } from "@/components/page-header";
+import { button } from "@/components/styles";
 import { TASK_PAGE_SIZE } from "@/lib/task-schema";
 import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
 import { TaskList } from "./task-list";
@@ -15,12 +17,11 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="header">
-        <h1>Tasks</h1>
-        <Link href="/tasks/new" className="btn btn-primary">
+      <PageHeader title="Tasks">
+        <Link href="/tasks/new" className={button.primary}>
           New task
         </Link>
-      </div>
+      </PageHeader>
       <TaskList />
     </HydrateClient>
   );

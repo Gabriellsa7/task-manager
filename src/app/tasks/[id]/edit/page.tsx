@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
 import { taskIdSchema } from "@/lib/task-schema";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { TaskForm } from "../../task-form";
@@ -22,9 +23,7 @@ export default async function EditTaskPage({
 
   return (
     <>
-      <div className="header">
-        <h1>Edit task</h1>
-      </div>
+      <PageHeader title="Edit task" />
       <TaskForm task={task} />
     </>
   );
