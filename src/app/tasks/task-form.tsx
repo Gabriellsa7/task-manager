@@ -5,12 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
+import { button, card } from "@/components/styles";
 import { useToast } from "@/components/toast";
 import { getErrorMessage, getFieldErrors } from "@/lib/errors";
 import { type Task, taskInputSchema } from "@/lib/task-schema";
 import { useTRPC } from "@/trpc/client";
 
 type FieldErrors = Partial<Record<string, string[]>>;
+
+const labelClass = "text-sm font-semibold";
+const inputClass =
+  "rounded-md border border-gray-300 px-2.5 py-2 aria-invalid:border-red-600";
 
 export function TaskForm({ task }: { task?: Task }) {
   const trpc = useTRPC();
@@ -59,11 +64,16 @@ export function TaskForm({ task }: { task?: Task }) {
   }
 
   return (
-    <form className="card form" onSubmit={handleSubmit} noValidate>
-      <div className="field">
-        <label htmlFor="titulo">Title *</label>
+    <form
+      className={`${card} flex flex-col gap-4`}
+      onSubmit={handleSubmit}
+      noValidate
+    >
+      <div className="flex flex-col gap-1">
+        <label htmlFor="titulo" className={labelClass}>Title *</label>
         <input
           id="titulo"
+          className={inputClass}
           value={titulo}
           onChange={(event) => setTitulo(event.target.value)}
           aria-invalid={!!errors.titulo}
@@ -73,10 +83,11 @@ export function TaskForm({ task }: { task?: Task }) {
         <FieldError id="titulo-error" messages={errors.titulo} />
       </div>
 
-      <div className="field">
-        <label htmlFor="descricao">Description</label>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="descricao" className={labelClass}>Description</label>
         <textarea
           id="descricao"
+          className={`${inputClass} resize-y`}
           rows={4}
           value={descricao}
           onChange={(event) => setDescricao(event.target.value)}
@@ -86,11 +97,11 @@ export function TaskForm({ task }: { task?: Task }) {
         <FieldError id="descricao-error" messages={errors.descricao} />
       </div>
 
-      <div className="form-actions">
-        <Link href="/" className="btn">
+      <div className="flex justify-end gap-2">
+        <Link href="/" className={button.default}>
           Cancel
         </Link>
-        <button type="submit" className="btn btn-primary" disabled={isSaving}>
+        <button type="submit" className={button.primary} disabled={isSaving}>
           {isSaving ? "Saving..." : "Save"}
         </button>
       </div>
@@ -100,7 +111,7 @@ export function TaskForm({ task }: { task?: Task }) {
 
 function FieldError({ id, messages }: { id: string; messages?: string[] }) {
   return (
-    <span id={id} className="field-error">
+    <span id={id} className="min-h-5 text-xs text-red-600">
       {messages?.[0]}
     </span>
   );
