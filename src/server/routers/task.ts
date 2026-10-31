@@ -5,7 +5,7 @@ import * as taskStore from "../task-store";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 const notFound = (id: number) =>
-  new TRPCError({ code: "NOT_FOUND", message: `Tarefa ${id} não encontrada` });
+  new TRPCError({ code: "NOT_FOUND", message: `Task ${id} not found` });
 
 export const taskRouter = createTRPCRouter({
   list: publicProcedure

@@ -6,9 +6,9 @@ function isTRPCError(error: unknown): error is TRPCClientError<AppRouter> {
 }
 
 export function getErrorMessage(error: unknown) {
-  if (!isTRPCError(error)) return "Erro inesperado. Tente novamente.";
-  if (!error.data) return "Não foi possível conectar ao servidor.";
-  if (error.data.zodError) return "Dados inválidos. Verifique os campos.";
+  if (!isTRPCError(error)) return "Unexpected error. Please try again.";
+  if (!error.data) return "Could not connect to the server.";
+  if (error.data.zodError) return "Invalid data. Please check the fields.";
   return error.message;
 }
 

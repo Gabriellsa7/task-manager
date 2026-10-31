@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { caller, clearTasks } from "@/test/caller";
 
-it("começa com 25 tarefas de exemplo", async () => {
+it("starts with 25 sample tasks", async () => {
   const { items } = await caller.task.list({ limit: 50 });
   expect(items).toHaveLength(25);
 });
@@ -10,39 +10,39 @@ describe("task router", () => {
   beforeEach(clearTasks);
 
   describe("create", () => {
-    it("cria uma tarefa com id e data de criação", async () => {
+    it("creates a task with id and creation date", async () => {
       const task = await caller.task.create({
-        titulo: "  Estudar tRPC  ",
-        descricao: "Ler a documentação",
+        titulo: "  Learn tRPC  ",
+        descricao: "Read the docs",
       });
 
       expect(task).toMatchObject({
         id: expect.any(Number),
-        titulo: "Estudar tRPC",
-        descricao: "Ler a documentação",
+        titulo: "Learn tRPC",
+        descricao: "Read the docs",
       });
       expect(task.dataCriacao).toBeInstanceOf(Date);
     });
 
-    it("descarta descrição vazia", async () => {
-      const task = await caller.task.create({ titulo: "Sem descrição", descricao: "  " });
+    it("drops an empty description", async () => {
+      const task = await caller.task.create({ titulo: "No description", descricao: "  " });
       expect(task.descricao).toBeUndefined();
     });
 
-    it("gera ids únicos", async () => {
+    it("generates unique ids", async () => {
       const a = await caller.task.create({ titulo: "A" });
       const b = await caller.task.create({ titulo: "B" });
       expect(a.id).not.toBe(b.id);
     });
 
-    it.each(["", "   "])("rejeita título vazio (%j)", async (titulo) => {
+    it.each(["", "   "])("rejects an empty title (%j)", async (titulo) => {
       await expect(caller.task.create({ titulo })).rejects.toMatchObject({
         code: "BAD_REQUEST",
-        message: expect.stringContaining("O título é obrigatório"),
+        message: expect.stringContaining("Title is required"),
       });
     });
 
-    it("rejeita título com mais de 100 caracteres", async () => {
+    it("rejects a title longer than 100 characters", async () => {
       await expect(
         caller.task.create({ titulo: "a".repeat(101) }),
       ).rejects.toMatchObject({ code: "BAD_REQUEST" });
@@ -50,46 +50,46 @@ describe("task router", () => {
   });
 
   describe("byId", () => {
-    it("retorna a tarefa", async () => {
-      const created = await caller.task.create({ titulo: "Buscar" });
+    it("returns the task", async () => {
+      const created = await caller.task.create({ titulo: "Find me" });
       await expect(caller.task.byId({ id: created.id })).resolves.toEqual(created);
     });
 
-    it("retorna NOT_FOUND para id inexistente", async () => {
+    it("returns NOT_FOUND for an unknown id", async () => {
       await expect(caller.task.byId({ id: 999 })).rejects.toMatchObject({
         code: "NOT_FOUND",
-        message: "Tarefa 999 não encontrada",
+        message: "Task 999 not found",
       });
     });
   });
 
   describe("update", () => {
-    it("atualiza título e descrição mantendo id e data de criação", async () => {
-      const created = await caller.task.create({ titulo: "Antigo", descricao: "Desc" });
+    it("updates title and description keeping id and creation date", async () => {
+      const created = await caller.task.create({ titulo: "Old", descricao: "Desc" });
 
       const updated = await caller.task.update({
         id: created.id,
-        titulo: "Novo",
+        titulo: "New",
         descricao: "",
       });
 
       expect(updated).toEqual({
         id: created.id,
-        titulo: "Novo",
+        titulo: "New",
         descricao: undefined,
         dataCriacao: created.dataCriacao,
       });
       await expect(caller.task.byId({ id: created.id })).resolves.toEqual(updated);
     });
 
-    it("retorna NOT_FOUND para tarefa inexistente", async () => {
+    it("returns NOT_FOUND for a missing task", async () => {
       await expect(
-        caller.task.update({ id: 999, titulo: "Qualquer" }),
-      ).rejects.toMatchObject({ code: "NOT_FOUND", message: "Tarefa 999 não encontrada" });
+        caller.task.update({ id: 999, titulo: "Anything" }),
+      ).rejects.toMatchObject({ code: "NOT_FOUND", message: "Task 999 not found" });
     });
 
-    it("rejeita título vazio", async () => {
-      const created = await caller.task.create({ titulo: "Válido" });
+    it("rejects an empty title", async () => {
+      const created = await caller.task.create({ titulo: "Valid" });
       await expect(
         caller.task.update({ id: created.id, titulo: "" }),
       ).rejects.toMatchObject({ code: "BAD_REQUEST" });
@@ -97,8 +97,8 @@ describe("task router", () => {
   });
 
   describe("delete", () => {
-    it("remove a tarefa", async () => {
-      const created = await caller.task.create({ titulo: "Remover" });
+    it("removes the task", async () => {
+      const created = await caller.task.create({ titulo: "Remove me" });
 
       await expect(caller.task.delete({ id: created.id })).resolves.toEqual({ id: created.id });
       await expect(caller.task.byId({ id: created.id })).rejects.toMatchObject({
@@ -106,7 +106,7 @@ describe("task router", () => {
       });
     });
 
-    it("retorna NOT_FOUND ao remover tarefa inexistente", async () => {
+    it("returns NOT_FOUND when deleting a missing task", async () => {
       await expect(caller.task.delete({ id: 999 })).rejects.toMatchObject({
         code: "NOT_FOUND",
       });
@@ -116,21 +116,21 @@ describe("task router", () => {
   describe("list", () => {
     async function createMany(count: number) {
       for (let i = 1; i <= count; i++) {
-        await caller.task.create({ titulo: `Tarefa ${i}` });
+        await caller.task.create({ titulo: `Task ${i}` });
       }
     }
 
-    it("retorna lista vazia sem cursor seguinte", async () => {
+    it("returns an empty list without a next cursor", async () => {
       await expect(caller.task.list({})).resolves.toEqual({ items: [], nextCursor: null });
     });
 
-    it("ordena das mais recentes para as mais antigas", async () => {
+    it("orders from newest to oldest", async () => {
       await createMany(3);
       const { items } = await caller.task.list({});
-      expect(items.map((task) => task.titulo)).toEqual(["Tarefa 3", "Tarefa 2", "Tarefa 1"]);
+      expect(items.map((task) => task.titulo)).toEqual(["Task 3", "Task 2", "Task 1"]);
     });
 
-    it("pagina por cursor sem repetir nem pular tarefas", async () => {
+    it("paginates by cursor without repeating or skipping tasks", async () => {
       await createMany(7);
 
       const first = await caller.task.list({ limit: 3 });
@@ -138,22 +138,22 @@ describe("task router", () => {
       const third = await caller.task.list({ limit: 3, cursor: second.nextCursor });
 
       const titles = [...first.items, ...second.items, ...third.items].map((t) => t.titulo);
-      expect(titles).toEqual([7, 6, 5, 4, 3, 2, 1].map((i) => `Tarefa ${i}`));
+      expect(titles).toEqual([7, 6, 5, 4, 3, 2, 1].map((i) => `Task ${i}`));
       expect(third.nextCursor).toBeNull();
     });
 
-    it("mantém a paginação estável quando tarefas são criadas ou removidas", async () => {
+    it("keeps pagination stable when tasks are created or deleted", async () => {
       await createMany(6);
       const first = await caller.task.list({ limit: 3 });
 
-      await caller.task.create({ titulo: "Nova" });
+      await caller.task.create({ titulo: "Brand new" });
       await caller.task.delete({ id: first.items[2].id });
 
       const second = await caller.task.list({ limit: 3, cursor: first.nextCursor });
-      expect(second.items.map((t) => t.titulo)).toEqual(["Tarefa 3", "Tarefa 2", "Tarefa 1"]);
+      expect(second.items.map((t) => t.titulo)).toEqual(["Task 3", "Task 2", "Task 1"]);
     });
 
-    it("usa 10 itens por página por padrão", async () => {
+    it("uses 10 items per page by default", async () => {
       await createMany(12);
       const { items, nextCursor } = await caller.task.list({});
       expect(items).toHaveLength(10);

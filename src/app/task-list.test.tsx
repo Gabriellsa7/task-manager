@@ -124,7 +124,7 @@ describe("TaskList", () => {
     await user.click(screen.getByRole("button", { name: "Excluir" }));
 
     expect(
-      await screen.findByText(`Tarefa ${task.id} não encontrada`),
+      await screen.findByText(`Task ${task.id} not found`),
     ).toBeInTheDocument();
     expect(await screen.findByText(/Nenhuma tarefa ainda/)).toBeInTheDocument();
   });

@@ -21,7 +21,7 @@ describe("TaskForm", () => {
     await user.type(screen.getByLabelText("Título *"), "   ");
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
-    expect(screen.getByText("O título é obrigatório")).toBeInTheDocument();
+    expect(screen.getByText("Title is required")).toBeInTheDocument();
     expect(screen.getByLabelText("Título *")).toHaveAttribute("aria-invalid", "true");
     expect(push).not.toHaveBeenCalled();
     await expect(caller.task.list({})).resolves.toMatchObject({ items: [] });
@@ -71,7 +71,7 @@ describe("TaskForm", () => {
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
     expect(
-      await screen.findByText(`Tarefa ${task.id} não encontrada`),
+      await screen.findByText(`Task ${task.id} not found`),
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();

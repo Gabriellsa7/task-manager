@@ -45,8 +45,8 @@ export function deleteTask(id: number) {
 if (store.tasks.size === 0 && store.nextId === 1) {
   for (let i = 1; i <= 25; i++) {
     createTask({
-      titulo: `Tarefa de exemplo ${i}`,
-      descricao: i % 3 === 0 ? undefined : `Descrição da tarefa de exemplo ${i}`,
+      titulo: `Sample task ${i}`,
+      descricao: i % 3 === 0 ? undefined : `Description for sample task ${i}`,
     });
   }
 }

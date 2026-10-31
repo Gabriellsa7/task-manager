@@ -8,24 +8,24 @@ const client = createTestClient();
 
 async function catchError(promise: Promise<unknown>) {
   return promise.then(
-    () => expect.fail("deveria ter falhado"),
+    () => expect.fail("should have failed"),
     (error: unknown) => error,
   );
 }
 
-describe("erros via HTTP", () => {
+describe("errors over HTTP", () => {
   beforeEach(clearTasks);
 
-  it("envia os erros de validação por campo", async () => {
+  it("sends validation errors per field", async () => {
     const error = await catchError(client.task.create.mutate({ titulo: "" }));
 
-    expect(getErrorMessage(error)).toBe("Dados inválidos. Verifique os campos.");
-    expect(getFieldErrors(error)).toEqual({ titulo: ["O título é obrigatório"] });
+    expect(getErrorMessage(error)).toBe("Invalid data. Please check the fields.");
+    expect(getFieldErrors(error)).toEqual({ titulo: ["Title is required"] });
   });
 
-  it("usa a mensagem do servidor para tarefa inexistente", async () => {
+  it("uses the server message for a missing task", async () => {
     const error = await catchError(
-      client.task.update.mutate({ id: 999, titulo: "Qualquer" }),
+      client.task.update.mutate({ id: 999, titulo: "Anything" }),
     );
 
     expect(error).toBeInstanceOf(TRPCClientError);
@@ -33,24 +33,24 @@ describe("erros via HTTP", () => {
       code: "NOT_FOUND",
       httpStatus: 404,
     });
-    expect(getErrorMessage(error)).toBe("Tarefa 999 não encontrada");
+    expect(getErrorMessage(error)).toBe("Task 999 not found");
     expect(getFieldErrors(error)).toEqual({});
   });
 
-  it("trafega dataCriacao como Date", async () => {
-    const task = await client.task.create.mutate({ titulo: "Com data" });
+  it("transports dataCriacao as a Date", async () => {
+    const task = await client.task.create.mutate({ titulo: "With date" });
     expect(task.dataCriacao).toBeInstanceOf(Date);
   });
 });
 
 describe("getErrorMessage", () => {
-  it("trata falha de rede", () => {
+  it("handles network failures", () => {
     const error = TRPCClientError.from(new TypeError("Failed to fetch"));
-    expect(getErrorMessage(error)).toBe("Não foi possível conectar ao servidor.");
+    expect(getErrorMessage(error)).toBe("Could not connect to the server.");
   });
 
-  it("trata erros que não são do tRPC", () => {
-    expect(getErrorMessage(new Error("boom"))).toBe("Erro inesperado. Tente novamente.");
+  it("handles non-tRPC errors", () => {
+    expect(getErrorMessage(new Error("boom"))).toBe("Unexpected error. Please try again.");
     expect(getFieldErrors(new Error("boom"))).toEqual({});
   });
 });
