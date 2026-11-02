@@ -33,7 +33,7 @@ function renderList() {
 
 async function createMany(count: number) {
   for (let i = 1; i <= count; i++) {
-    await caller.task.create({ titulo: `Task ${i}` });
+    await caller.task.create({ title: `Task ${i}` });
   }
 }
 
@@ -53,8 +53,8 @@ describe("TaskList", () => {
   });
 
   it("lists the newest tasks first", async () => {
-    await caller.task.create({ titulo: "First", descricao: "With description" });
-    await caller.task.create({ titulo: "Second" });
+    await caller.task.create({ title: "First", description: "With description" });
+    await caller.task.create({ title: "Second" });
     renderList();
 
     await screen.findByText("Second");
@@ -90,8 +90,8 @@ describe("TaskList", () => {
 
   it("deletes the task after confirmation", async () => {
     const user = userEvent.setup();
-    await caller.task.create({ titulo: "Keep" });
-    await caller.task.create({ titulo: "Delete this one" });
+    await caller.task.create({ title: "Keep" });
+    await caller.task.create({ title: "Delete this one" });
     renderList();
 
     const item = (await screen.findByText("Delete this one")).closest("li")!;
@@ -105,7 +105,7 @@ describe("TaskList", () => {
   it("does not delete if the user cancels", async () => {
     const user = userEvent.setup();
     vi.mocked(window.confirm).mockReturnValue(false);
-    const task = await caller.task.create({ titulo: "Stays" });
+    const task = await caller.task.create({ title: "Stays" });
     renderList();
 
     await user.click(await screen.findByRole("button", { name: "Delete" }));
@@ -116,7 +116,7 @@ describe("TaskList", () => {
 
   it("shows an error and refreshes the list if the task was already deleted", async () => {
     const user = userEvent.setup();
-    const task = await caller.task.create({ titulo: "Already deleted" });
+    const task = await caller.task.create({ title: "Already deleted" });
     renderList();
     await screen.findByText("Already deleted");
     await caller.task.delete({ id: task.id });

@@ -88,7 +88,7 @@ function TaskItem({ task }: { task: Task }) {
   );
 
   function handleDelete() {
-    if (confirm(`Delete task "${task.titulo}"?`)) {
+    if (confirm(`Delete task "${task.title}"?`)) {
       deleteTask.mutate({ id: task.id });
     }
   }
@@ -98,14 +98,14 @@ function TaskItem({ task }: { task: Task }) {
       className={`${card} flex flex-col items-start justify-between gap-4 sm:flex-row`}
     >
       <div className="min-w-0">
-        <h2 className="mb-1 font-semibold">{task.titulo}</h2>
-        {task.descricao && (
+        <h2 className="mb-1 font-semibold">{task.title}</h2>
+        {task.description && (
           <p className="mb-1 wrap-anywhere whitespace-pre-wrap">
-            {task.descricao}
+            {task.description}
           </p>
         )}
         <span className="text-sm text-gray-500">
-          Created on {dateFormat.format(task.dataCriacao)}
+          Created on {dateFormat.format(task.createdAt)}
         </span>
       </div>
       <div className="flex shrink-0 gap-2">

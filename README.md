@@ -72,11 +72,10 @@ src/
 
 ## Decisions
 
-- **Field names follow the challenge spec**: the task model uses `titulo`, `descricao` and `dataCriacao` exactly as specified; everything else is in English.
 - **SSR with hydration**: the list page runs `prefetchInfiniteQuery` calling the router directly on the server (no HTTP round trip) and hands the cache to the client through `HydrationBoundary`. The HTML already contains the tasks, and the client keeps using React Query for pagination and invalidation. The page uses `force-dynamic` because data changes on every request.
 - **Cursor pagination**: ids are numeric and incremental, so the id itself is the cursor (`id < cursor`). Unlike an offset, it doesn't skip or repeat items when tasks are created or deleted between pages.
 - **Single schema**: `src/lib/task-schema.ts` is used both as tRPC input and for form validation, so the rules never diverge.
 - **Errors**: tRPC's `errorFormatter` sends zod errors per field, and `src/lib/errors.ts` turns any error (server, validation or network) into a user-friendly message.
-- **superjson**: lets `Date` values (`dataCriacao`) travel between server and client without manual conversion.
+- **superjson**: lets `Date` values (`createdAt`) travel between server and client without manual conversion.
 - **Store in `globalThis`**: keeps `next dev` hot reload from wiping tasks on every code change.
 - **Tailwind, no UI or form libraries**: utility classes plus a few shared style constants (`src/components/styles.ts`) and `useState` for the form, following the challenge's "less is more".

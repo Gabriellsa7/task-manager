@@ -23,8 +23,8 @@ export function TaskForm({ task }: { task?: Task }) {
   const router = useRouter();
   const toast = useToast();
 
-  const [titulo, setTitulo] = useState(task?.titulo ?? "");
-  const [descricao, setDescricao] = useState(task?.descricao ?? "");
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const callbacks = {
@@ -52,7 +52,7 @@ export function TaskForm({ task }: { task?: Task }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    const parsed = taskInputSchema.safeParse({ titulo, descricao });
+    const parsed = taskInputSchema.safeParse({ title, description });
     if (!parsed.success) {
       setErrors(z.flattenError(parsed.error).fieldErrors);
       return;
@@ -70,31 +70,31 @@ export function TaskForm({ task }: { task?: Task }) {
       noValidate
     >
       <div className="flex flex-col gap-1">
-        <label htmlFor="titulo" className={labelClass}>Title *</label>
+        <label htmlFor="title" className={labelClass}>Title *</label>
         <input
-          id="titulo"
+          id="title"
           className={inputClass}
-          value={titulo}
-          onChange={(event) => setTitulo(event.target.value)}
-          aria-invalid={!!errors.titulo}
-          aria-describedby="titulo-error"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          aria-invalid={!!errors.title}
+          aria-describedby="title-error"
           autoFocus
         />
-        <FieldError id="titulo-error" messages={errors.titulo} />
+        <FieldError id="title-error" messages={errors.title} />
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="descricao" className={labelClass}>Description</label>
+        <label htmlFor="description" className={labelClass}>Description</label>
         <textarea
-          id="descricao"
+          id="description"
           className={`${inputClass} resize-y`}
           rows={4}
-          value={descricao}
-          onChange={(event) => setDescricao(event.target.value)}
-          aria-invalid={!!errors.descricao}
-          aria-describedby="descricao-error"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          aria-invalid={!!errors.description}
+          aria-describedby="description-error"
         />
-        <FieldError id="descricao-error" messages={errors.descricao} />
+        <FieldError id="description-error" messages={errors.description} />
       </div>
 
       <div className="flex justify-end gap-2">

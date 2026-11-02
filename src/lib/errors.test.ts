@@ -17,15 +17,15 @@ describe("errors over HTTP", () => {
   beforeEach(clearTasks);
 
   it("sends validation errors per field", async () => {
-    const error = await catchError(client.task.create.mutate({ titulo: "" }));
+    const error = await catchError(client.task.create.mutate({ title: "" }));
 
     expect(getErrorMessage(error)).toBe("Invalid data. Please check the fields.");
-    expect(getFieldErrors(error)).toEqual({ titulo: ["Title is required"] });
+    expect(getFieldErrors(error)).toEqual({ title: ["Title is required"] });
   });
 
   it("uses the server message for a missing task", async () => {
     const error = await catchError(
-      client.task.update.mutate({ id: 999, titulo: "Anything" }),
+      client.task.update.mutate({ id: 999, title: "Anything" }),
     );
 
     expect(error).toBeInstanceOf(TRPCClientError);
@@ -37,9 +37,9 @@ describe("errors over HTTP", () => {
     expect(getFieldErrors(error)).toEqual({});
   });
 
-  it("transports dataCriacao as a Date", async () => {
-    const task = await client.task.create.mutate({ titulo: "With date" });
-    expect(task.dataCriacao).toBeInstanceOf(Date);
+  it("transports createdAt as a Date", async () => {
+    const task = await client.task.create.mutate({ title: "With date" });
+    expect(task.createdAt).toBeInstanceOf(Date);
   });
 });
 

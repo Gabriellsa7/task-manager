@@ -6,8 +6,8 @@ const store = ((globalThis as { taskStore?: { tasks: Map<number, Task>; nextId: 
   .taskStore ??= { tasks: new Map(), nextId: 1 });
 
 const normalize = (input: TaskInput) => ({
-  titulo: input.titulo,
-  descricao: input.descricao || undefined,
+  title: input.title,
+  description: input.description || undefined,
 });
 
 export function listTasks({ limit, cursor }: { limit: number; cursor?: number | null }) {
@@ -25,7 +25,7 @@ export function getTask(id: number) {
 }
 
 export function createTask(input: TaskInput) {
-  const task: Task = { id: store.nextId++, ...normalize(input), dataCriacao: new Date() };
+  const task: Task = { id: store.nextId++, ...normalize(input), createdAt: new Date() };
   store.tasks.set(task.id, task);
   return task;
 }
@@ -45,8 +45,8 @@ export function deleteTask(id: number) {
 if (store.tasks.size === 0 && store.nextId === 1) {
   for (let i = 1; i <= 25; i++) {
     createTask({
-      titulo: `Sample task ${i}`,
-      descricao: i % 3 === 0 ? undefined : `Description for sample task ${i}`,
+      title: `Sample task ${i}`,
+      description: i % 3 === 0 ? undefined : `Description for sample task ${i}`,
     });
   }
 }

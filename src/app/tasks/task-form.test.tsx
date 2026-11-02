@@ -40,31 +40,31 @@ describe("TaskForm", () => {
     expect(push).toHaveBeenCalledWith("/");
 
     const { items } = await caller.task.list({});
-    expect(items).toMatchObject([{ titulo: "Buy bread", descricao: "At the bakery" }]);
+    expect(items).toMatchObject([{ title: "Buy bread", description: "At the bakery" }]);
   });
 
   it("opens prefilled and saves the edit", async () => {
     const user = userEvent.setup();
-    const task = await caller.task.create({ titulo: "Old", descricao: "Desc" });
+    const task = await caller.task.create({ title: "Old", description: "Desc" });
     renderWithProviders(<TaskForm task={task} />);
 
-    const titulo = screen.getByLabelText("Title *");
-    expect(titulo).toHaveValue("Old");
+    const title = screen.getByLabelText("Title *");
+    expect(title).toHaveValue("Old");
     expect(screen.getByLabelText("Description")).toHaveValue("Desc");
 
-    await user.clear(titulo);
-    await user.type(titulo, "New");
+    await user.clear(title);
+    await user.type(title, "New");
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(await screen.findByText("Task updated successfully")).toBeInTheDocument();
     await expect(caller.task.byId({ id: task.id })).resolves.toMatchObject({
-      titulo: "New",
+      title: "New",
     });
   });
 
   it("shows the server error when the task no longer exists", async () => {
     const user = userEvent.setup();
-    const task = await caller.task.create({ titulo: "Removed" });
+    const task = await caller.task.create({ title: "Removed" });
     renderWithProviders(<TaskForm task={task} />);
     await caller.task.delete({ id: task.id });
 
